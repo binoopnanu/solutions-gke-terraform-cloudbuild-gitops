@@ -42,15 +42,30 @@ provider "helm" {
   }
 }
 
-resource "helm_release" "nginx_ingress" {
-  name       = "nginx-ingress-controller"
-
+resource "helm_release" "example" {
+  name       = "my-redis-release"
   repository = "https://charts.bitnami.com/bitnami"
-  chart      = "nginx-ingress-controller"
+  chart      = "redis"
+  version    = "6.0.1"
+
+  values = [
+    "${file("values.yaml")}"
+  ]
 
   set {
-    name  = "service.type"
-    value = "ClusterIP"
+    name  = "cluster.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "metrics.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "service.annotations.prometheus\\.io/port"
+    value = "9127"
+    type  = "string"
   }
 }
 
